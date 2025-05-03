@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 const RegisterVendor = () => {
   const [errors, setErrors] = useState({});
   const [formData, setFormData] = useState({
@@ -15,6 +16,7 @@ const RegisterVendor = () => {
     gst_no: "",
     mobile: "",
   });
+  const navigate = useNavigate();
   const [categories, setCategories] = useState({});
   const [loading, setLoading] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -122,6 +124,7 @@ const RegisterVendor = () => {
       } else {
         console.log(res.data);
         toast.success("You are registered successfully");
+        navigate("/");
       }
       setFormData({
         firstname: "",
@@ -135,7 +138,7 @@ const RegisterVendor = () => {
         gst_no: "",
         mobile: "",
       });
-      confirmPassword("");
+      setConfirmPassword("");
     } catch (err) {
       console.log(err);
     } finally {

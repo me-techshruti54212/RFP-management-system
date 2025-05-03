@@ -121,6 +121,7 @@ const RegisterVendor = () => {
         toast.error(res.data.error[0]);
       } else {
         console.log(res.data);
+        toast.success("You are registered successfully");
       }
       setFormData({
         firstname: "",

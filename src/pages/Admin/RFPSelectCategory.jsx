@@ -1,19 +1,43 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Header from "../../components/Header";
 import Sidebar from "../../components/Sidebar";
 import Footer from "../../components/Footer";
 import DashboardLayout from "../../layout/DashboardLayout";
 import AdminSidebar from "../../components/AdminSidebar";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 const RFPSelectCategory = () => {
   const [category, setCategory] = useState("");
+  const [categories, setCategories] = useState({});
+  const [selectedCategories, setSelectedCategories] = useState([]);
   const navigate = useNavigate();
-
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const res = await axios.get(
+        `${process.env.REACT_APP_API_URL}/categories`
+      );
+      if (res.data.response === "success") {
+        setCategories(res.data.categories);
+      } else console.log(res.data);
+    };
+    fetchCategories();
+  }, []);
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Selected category:", category);
-    navigate("/create-rfp");
-    // Submit logic here
+    navigate("/create-rfp", {
+      state: {
+        category,
+      },
+    });
+  };
+  const handleChange = (e) => {
+    if (e.target.name === "category") {
+      const opts = Array.from(e.target.selectedOptions).map((o) => o.value);
+      // console.log(opts);
+      setSelectedCategories(opts);
+      setCategory(opts.join(","));
+    }
   };
   return (
     <DashboardLayout>
@@ -28,7 +52,7 @@ const RFPSelectCategory = () => {
             <div className="row">
               <div className="col-12">
                 <div className="page-title-box d-flex align-items-center justify-content-between">
-                  <h4 className="mb-0 font-size-18">RFPQuotes List</h4>
+                  <h4 className="mb-0 font-size-18">RFPSelect Category</h4>
                   <div className="page-title-right">
                     <ol className="breadcrumb m-0">
                       <li className="breadcrumb-item">
@@ -57,16 +81,22 @@ const RFPSelectCategory = () => {
                     padding: "10px",
                     outline: "none",
                     borderRadius: "10px",
-                    width: "50%",
+                    width: "60%",
                   }}
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
+                  name="category"
+                  value={selectedCategories}
+                  onChange={handleChange}
                   required
+                  size={5}
+                  multiple
                 >
-                  <option value="">Select Category</option>
-                  <option value="abc">abc</option>
-                  <option value="def">def</option>
-                  <option value="xyz">xyz</option>
+                  {Object.values(categories)
+                    .filter((category) => category.status === "Active")
+                    .map((category) => (
+                      <option value={category.id} key={category.id}>
+                        {category.name}
+                      </option>
+                    ))}
                 </select>
               </div>
 
@@ -78,7 +108,14 @@ const RFPSelectCategory = () => {
                   Submit
                 </button>
 
-                <button type="button" className="btn btn-secondary">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => {
+                    setCategory("");
+                    setSelectedCategories([]);
+                  }}
+                >
                   Cancel
                 </button>
               </div>

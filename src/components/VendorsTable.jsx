@@ -26,7 +26,9 @@ const VendorsTable = () => {
       );
       // console.log(res.data.vendors);
       if (res.data.response === "error") toast.error(res.data.errors);
-      else if (res.data.response === "success") setVendors(res.data.vendors);
+      else if (res.data.response === "success") {
+        setVendors(res.data.vendors);
+      }
       // console.error(res.data);
     } catch (err) {
       console.log(err);
@@ -59,6 +61,7 @@ const VendorsTable = () => {
           vendor.user_id === userId ? { ...vendor, status: "Rejected" } : vendor
         )
       );
+      toast.success("RFP rejected successfully");
     }
   };
 
@@ -83,6 +86,7 @@ const VendorsTable = () => {
           vendor.user_id === userId ? { ...vendor, status: "Approved" } : vendor
         )
       );
+      toast.success("RFP approved successfully");
     }
   };
   if (loading) return <p>Loading data...</p>;
